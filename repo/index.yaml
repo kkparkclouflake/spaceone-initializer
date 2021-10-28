@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  spaceone-initializer:
+  - apiVersion: v2
+    appVersion: 1.x.y
+    created: "2021-10-28T17:06:38.625467932+09:00"
+    description: SpaceONE domain initializer Helm chart for Kubernetes
+    digest: 137057a45e6faa17cbd4636eaeac3392e3075fe6d93d949addcb1f3d21f35f05
+    name: spaceone-initializer
+    type: application
+    urls:
+    - spaceone-initializer-2.0.0.tgz
+    version: 2.0.0
+generated: "2021-10-28T17:06:38.624631304+09:00"
