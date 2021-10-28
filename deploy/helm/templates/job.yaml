@@ -71,6 +71,7 @@ spec:
 
                 sleep 1;
               done
+          # Do for Root Domain
         - name: job-1-spacectl-conf-writable
           imagePullPolicy: IfNotPresent
           image: busybox
@@ -89,26 +90,52 @@ spec:
               name: spacectl-environment-conf
               subPath: helm-root.yml
 
+        - name: job-2-initialize-spaceone-root-domain
+          image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          imagePullPolicy: {{ .Values.imagePullPolicy}}
+          command:
+            - sh
+            - /root/initialize.sh
+          volumeMounts:
+            - mountPath: /root/initialize.sh
+              name: start-script-conf
+              subPath: initialize.sh
+
+            - mountPath: /root/.spaceone
+              name: writable-spacectl-conf
+            - mountPath: /root/spacectl/apply
+              name: spacectl-apply-files-root-conf
+            - mountPath: /root/spacectl/main.yaml
+              name: spacectl-main-root-conf
+              subPath: main.yaml
+
+          # Do for User Domain
+        - name: job-4-initialize-spaceone-user-domain
+          image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          imagePullPolicy: {{ .Values.imagePullPolicy}}
+          command:
+            - sh
+            - /root/initialize.sh
+          volumeMounts:
+            - mountPath: /root/initialize.sh
+              name: start-script-conf
+              subPath: initialize.sh
+
+            - mountPath: /root/.spaceone
+              name: writable-spacectl-conf
+            - mountPath: /root/spacectl/apply
+              name: spacectl-apply-files-user-conf
+            - mountPath: /root/spacectl/main.yaml
+              name: spacectl-main-user-conf
+              subPath: main.yaml
+
+  # I don't really need the 'containers', but syntax requires 
+  # it so, I'm using it as a place where I can report the 
+  # completion status
       containers:
-      - name: job-2-initialize-spaceone
-        image: {{ .Values.image.name }}:{{ .Values.image.version }}
-        imagePullPolicy: {{ .Values.imagePullPolicy}}
-        command:
-          - sh
-          - /root/initialize.sh
-        volumeMounts:
-          - mountPath: /root/initialize.sh
-            name: start-script-conf
-            subPath: initialize.sh
-
-          - mountPath: /root/.spaceone
-            name: writable-spacectl-conf
-          - mountPath: /root/spacectl/apply
-            name: spacectl-apply-files-conf
-          - mountPath: /root/spacectl/main.yaml
-            name: spacectl-main-conf
-            subPath: main.yaml
-
+      - name: job-done
+        image: busybox
+        command: ['sh', '-c', 'echo "job-1 and job-2 completed"']
       volumes:
         - name: start-script-conf
           configMap:
@@ -116,12 +143,22 @@ spec:
         - name: spacectl-environment-conf
           configMap:
             name: spacectl-environment-conf
+        #- name: writable-spacectl-root-conf
+        #  emptyDir: {}
         - name: writable-spacectl-conf
           emptyDir: {}
-        - name: spacectl-apply-files-conf
+          # for Root Domain
+        - name: spacectl-apply-files-root-conf
           configMap:
-            name: spacectl-apply-files-conf
-        - name: spacectl-main-conf
+            name: spacectl-apply-files-root-conf
+        - name: spacectl-main-root-conf
           configMap:
-            name: spacectl-main-conf
+            name: spacectl-main-root-conf
+          # for User Domain
+        - name: spacectl-apply-files-user-conf
+          configMap:
+            name: spacectl-apply-files-user-conf
+        - name: spacectl-main-user-conf
+          configMap:
+            name: spacectl-main-user-conf
  {{ end }}
