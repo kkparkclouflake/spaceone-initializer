@@ -110,7 +110,7 @@ spec:
               subPath: main.yaml
 
           # Do for User Domain
-        - name: job-4-initialize-spaceone-user-domain
+        - name: job-3-initialize-spaceone-user-domain
           image: {{ .Values.image.name }}:{{ .Values.image.version }}
           imagePullPolicy: {{ .Values.imagePullPolicy}}
           command:
